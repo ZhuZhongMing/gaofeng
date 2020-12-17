@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.MbpMqttDataMapper">
+
+    <!--查询最新10条记录-->
+    <select id="TopTen" resultType="org.jeecg.modules.system.entity.MbpMqttData">
+        SELECT top 10 a.*, b.equipment_name, c.dict
+        FROM mbp_mqtt_data a, mbp_dev_equipment b, mbp_dev_equipment_var c
+        WHERE var_value != 'null' AND a.var_name = c.equipment_var_name AND c.equipment_id = b.id
+        <if test="null != varName">
+            and var_name LIKE #{varName}
+        </if>
+        ORDER BY id DESC
+    </select>
+
+</mapper>

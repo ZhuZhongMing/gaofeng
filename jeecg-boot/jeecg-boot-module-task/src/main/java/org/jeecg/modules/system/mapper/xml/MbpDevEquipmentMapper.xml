@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.MbpDevEquipmentMapper">
+
+    <!--查询生产设备温度-->
+    <select id="queryDevEquipmentList" resultType="org.jeecg.modules.system.vo.MbpDevEquipmentVO">
+        SELECT a.*, b.equipment_var_name, b.dict, c.var_value as temperature
+        FROM mbp_dev_equipment a, mbp_dev_equipment_var b, last_temperature c
+        WHERE a.id = b.equipment_id AND c.var_name = b.equipment_var_name
+    </select>
+
+    <!--查询设备最新数据-->
+    <select id="queryLastVarValue" resultType="org.jeecg.modules.system.entity.MbpMqttData">
+        SELECT top 7 a.*, b.dict
+        FROM mbp_mqtt_data a, mbp_dev_equipment_var b
+        WHERE a.var_name = b.equipment_var_name AND a.var_name IN (
+            SELECT equipment_var_name FROM mbp_dev_equipment_var WHERE equipment_id = #{id}
+        )
+        ORDER BY create_time DESC
+    </select>
+
+    <!--查询控制设备温度-->
+    <select id="queryLastTemperature" resultType="org.jeecg.modules.system.entity.MbpMqttData">
+        SELECT TOP 3 *
+        FROM mbp_mqtt_data
+        WHERE var_name in ('Ice_Water_Temperature','Saccharification_Temperature','Filtration_Temperature')
+        ORDER BY create_time DESC
+    </select>
+
+    <!--查询所有生产设备温度变化-->
+    <select id="queryAllDevEquipmentList" resultType="org.jeecg.modules.system.vo.MbpDevEquipmentVO">
+        SELECT *
+        FROM TOP10Last_temperature
+    </select>
+</mapper>
